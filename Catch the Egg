@@ -1,0 +1,82 @@
+import pygame
+import random
+
+# Initialize Pygame
+pygame.init()
+
+# Constants
+WIDTH, HEIGHT = 800, 600
+WHITE = (255, 255, 255)
+EGG_COLOR = (255, 255, 0)
+BASKET_COLOR = (0, 0, 255)
+
+# Create the game window
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Catch the Egg")
+
+# Load images
+egg_image = pygame.image.load("egg.png")
+egg_image = pygame.transform.scale(egg_image, (50, 50))
+basket_image = pygame.image.load("basket.png")
+basket_image = pygame.transform.scale(basket_image, (100, 100))
+
+# Initialize variables
+egg_x = random.randint(0, WIDTH - 50)
+egg_y = 0
+basket_x = WIDTH // 2 - 50
+basket_y = HEIGHT - 100
+score = 0
+
+# Create a clock object to control the frame rate
+clock = pygame.time.Clock()
+
+# Main game loop
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        basket_x -= 5
+    if keys[pygame.K_RIGHT]:
+        basket_x += 5
+
+    # Move the egg down
+    egg_y += 5
+
+    # Check for collision
+    if (
+        egg_y + 50 >= basket_y
+        and egg_x >= basket_x
+        and egg_x <= basket_x + 100
+    ):
+        egg_x = random.randint(0, WIDTH - 50)
+        egg_y = 0
+        score += 1
+
+    # Check if the egg missed the basket
+    if egg_y >= HEIGHT:
+        egg_x = random.randint(0, WIDTH - 50)
+        egg_y = 0
+
+    # Fill the background
+    screen.fill(WHITE)
+
+    # Draw the egg and basket
+    screen.blit(egg_image, (egg_x, egg_y))
+    screen.blit(basket_image, (basket_x, basket_y))
+
+    # Display the score
+    font = pygame.font.Font(None, 36)
+    text = font.render(f"Score: {score}", True, BASKET_COLOR)
+    screen.blit(text, (10, 10))
+
+    pygame.display.update()
+
+    # Control the frame rate
+    clock.tick(60)
+
+# Quit Pygame
+pygame.quit()
